@@ -4,6 +4,12 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    downloadDir: 'var/data/download'
+    backupFolder: 'var/data/download/backup'
+    redisHost: '%env(string:REDIS_HOST)%'
+    bybitApiKeys:
+        ApiKey: '%env(string:BYBIT_API_KEY)%'
+        Secret: '%env(string:BYBIT_API_SECRET)%'
 
 services:
     # default configuration for services in *this* file
@@ -22,3 +28,34 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Infra\Source\Api\BybitApiClientBuilder:
+        arguments:
+            - '%bybitApiKeys%'
+
+
+#    # Redis and TimeSeries adapters
+    timeseries_factory:
+        class: 'App\Infra\Store\Adapter\RedisTimeSeries\Factory\RedisTimeSeriesFactory'
+        arguments:
+            - '%redisHost%'
+            - '6379'
+
+    App\Infra\Store\Adapter\RedisTimeSeries\TimeSeries:
+        class: App\Infra\Store\Adapter\RedisTimeSeries\TimeSeries
+        factory: ['@timeseries_factory', 'getClient']
+
+    App\Infra\Source\File\BybitFileDownloader:
+        arguments:
+            - '%downloadDir%'
+
+    # CLI
+    App\UI\Cli\BybitFileDownloadCommand:
+        arguments:
+            - '@App\Infra\Source\File\BybitFileDownloader'
+            - '%backupFolder%'
+            - '%downloadDir%'
+
+    App\UI\Cli\BybitFileImportCommand:
+        arguments:
+            - '%downloadDir%'

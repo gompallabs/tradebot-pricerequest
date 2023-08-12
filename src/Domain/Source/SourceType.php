@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Source;
 
-class Source
+enum SourceType
 {
-
+    case RestApi;
+    case File;
 }

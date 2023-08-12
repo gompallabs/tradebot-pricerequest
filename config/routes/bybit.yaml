@@ -1,0 +1,23 @@
+instrument_price:
+  path: /v5/market/tickers
+  methods: [GET]
+  requirements:
+    category: \s+     # Product type. linear, inverse, spot
+    symbol: \s+       # Symbol name
+
+instrument_history_price:
+  path: /v5/market/kline
+  methods: [ GET ]
+  requirements:
+    category: \s+     # Product type. linear,inverse
+    symbol: \s+       # Symbol name
+    interval: \s+    # Kline interval. 1,3,5,15,30,60,120,240,360,720,D,M,W
+    start: \d+        # start The start timestamp (ms)
+    end: \d+          # end The end timestamp (ms)
+
+recent_trade:
+  path: /v5/market/recent-trade
+  methods: [GET]
+  requirements:
+    category: \s+     # Product type. linear,inverse
+    symbol: \s+       # Symbol name
