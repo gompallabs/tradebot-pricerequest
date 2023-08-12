@@ -1,0 +1,14 @@
+default:
+    suites:
+        default:
+            contexts:
+                - App\Tests\Functionnal\AggregationContext
+                - App\Tests\Functionnal\DatastoreContext
+                - App\Tests\Functionnal\FileContext
+                - App\Tests\Functionnal\RecentTradesContext
+                - App\Tests\Functionnal\RequestContext
+                - App\Tests\Functionnal\TimeSeriesContext
+
+    extensions:
+        FriendsOfBehat\SymfonyExtension:
+            bootstrap: tests/bootstrap.php

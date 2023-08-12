@@ -13,6 +13,18 @@ framework:
         cookie_samesite: lax
         storage_factory_id: session.storage.factory.native
 
+    http_client:
+        scoped_clients:
+            # only requests matching scope will use these options
+            bybit.client:
+                base_uri: 'https://api.bybit.com/v5'
+                scope: 'https://api\.bybit\.com/v5'
+                headers:
+                    Accept: 'application/json'
+            bybit.public.client:
+                base_uri: 'https://public.bybit.com'
+                scope: 'https://public\.bybit\.com'
+
     #esi: true
     #fragments: true
     php_errors:

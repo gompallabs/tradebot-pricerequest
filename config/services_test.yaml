@@ -1,0 +1,15 @@
+parameters:
+    downloadDir: 'var/data/download'
+    backupFolder: 'var/data/download/backup'
+    redisHost: '%env(string:REDIS_HOST)%'
+    bybitApiKeys:
+        ApiKey: '%env(string:BYBIT_API_KEY)%'
+        Secret: '%env(string:BYBIT_API_SECRET)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Tests\Functionnal\:
+        resource: '../tests/Functionnal/*'
