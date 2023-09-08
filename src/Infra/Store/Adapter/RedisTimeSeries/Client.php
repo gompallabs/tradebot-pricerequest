@@ -34,7 +34,7 @@ class Client implements ClientInterface
                 } else {
                     $result = $this->redis->auth($password);
                 }
-                if (false === $result) {
+                if ($result === false) {
                     throw new RedisAuthenticationException(sprintf('Failure authenticating user %s', $username ?: 'default'));
                 }
             }
@@ -47,7 +47,7 @@ class Client implements ClientInterface
     {
         $this->connectIfNeeded();
         $options = [];
-        if (null !== $expiration) {
+        if ($expiration !== null) {
             if (is_int($expiration)) {
                 $options['EX'] = $expiration; // in seconds
             }
@@ -93,7 +93,7 @@ class Client implements ClientInterface
             $params->getRetryInterval()
         );
 
-        if (false === $result) {
+        if ($result === false) {
             throw new RedisClientException(sprintf('Unable to connect to redis server %s:%s: %s', $params->getHost(), $params->getPort(), $this->redis->getLastError() ?? 'unknown error'));
         }
 

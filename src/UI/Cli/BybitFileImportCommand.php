@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\UI\Cli;
 
-use App\Domain\TsSampling\TickDataTransformer;
 use App\Infra\Source\File\BybitCsvFileParser;
 use App\Infra\Source\File\BybitFileDecompressor;
+use App\Tests\Functionnal\Prototype\TsSampling\Infra\TickDataTransformer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,7 +36,7 @@ final class BybitFileImportCommand extends Command
         $finder->in($downloadDir)->files();
         $fileToProcess = new \ArrayIterator();
         foreach ($finder->getIterator() as $file) {
-            if ('gz' === $file->getExtension()) {
+            if ($file->getExtension() === 'gz') {
                 $fileToProcess->append($file);
             }
         }

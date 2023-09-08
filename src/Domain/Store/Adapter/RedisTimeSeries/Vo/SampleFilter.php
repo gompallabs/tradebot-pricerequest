@@ -47,7 +47,7 @@ final class SampleFilter
             throw new InvalidFilterOperationException('The provided operation requires the value to be string');
         }
 
-        if (null !== $value && in_array($operation, [self::OP_EXISTS, self::OP_NOT_EXISTS], true)) {
+        if ($value !== null && in_array($operation, [self::OP_EXISTS, self::OP_NOT_EXISTS], true)) {
             throw new InvalidFilterOperationException('The provided operation requires the value to be null');
         }
 

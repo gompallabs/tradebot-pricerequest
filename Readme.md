@@ -6,9 +6,12 @@ Pre-requisites: <br />
     - a crypto exchange account with a nice REST API (here we take Bybit as start point) <br />
     - a redis server with TimeSeries module extension <br />
 
-Prepare:
+Prepare: <br />
     1. Setup your API KEYS and REDIS connexion parameters as env vars <br />
     2. $ mkdir -p ./var/data/csv ./var/data/download/backup
 
-Run:
-    A cron script may help you setup < 30s periodic requests
+Run: <br />
+    - A cron script may help you setup < 30s periodic requests
+
+Docker: <br />
+    - $ make up

@@ -76,6 +76,6 @@ class BybitApiClientResponseTransformer implements ClientResponseTransformer
             $pricesCollection->add($result);
         }
 
-        return $pricesCollection->getIterator();
+        return new \ArrayIterator($pricesCollection->toArray());
     }
 }

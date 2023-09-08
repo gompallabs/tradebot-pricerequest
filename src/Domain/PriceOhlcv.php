@@ -9,7 +9,7 @@ namespace App\Domain;
  */
 final class PriceOhlcv
 {
-    private float $tsms;
+    private int $tsms;
     private float $open;
     private float $high;
     private float $low;
@@ -22,7 +22,7 @@ final class PriceOhlcv
      * $category means spot or perp (if linear).
      */
     public function __construct(
-        float $tsms,
+        int $tsms,
         float $open
     ) {
         $this->tsms = $tsms;
@@ -47,11 +47,25 @@ final class PriceOhlcv
         $this->close = $price;
     }
 
+    public function addTickWithoutLabel(\SplFixedArray $tick): void
+    {
+        $price = $tick[2];
+        if ($price <= $this->low) {
+            $this->setLow($price);
+        }
+        if ($price >= $this->high) {
+            $this->setHigh($price);
+        }
+        $this->addBuyVolume($tick[3]);
+        $this->addSellVolume($tick[4]);
+        $this->close = $price;
+    }
+
     public function addVolume(string $side, float $size): void
     {
-        if ('Buy' === $side) {
+        if ($side === 'Buy') {
             $this->addBuyVolume($size);
-        } elseif ('Sell' === $side) {
+        } elseif ($side === 'Sell') {
             $this->addSellVolume($size);
         } else {
             throw new \RuntimeException('Tick side should be Buy or Sell');

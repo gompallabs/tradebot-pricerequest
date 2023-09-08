@@ -92,6 +92,7 @@ WORKDIR /srv/${INSTALL_DIR}
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY ${PHP_CONF_DIR}/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
 COPY ${PHP_CONF_DIR}/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
+COPY ${PHP_CONF_DIR}/security-checker-install.sh /usr/local/bin/security-checker-install.sh
 COPY ${PHP_CONF_DIR}/${ENTRYPOINT_FILE} /usr/local/bin/docker-entrypoint.sh
 
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
@@ -99,13 +100,14 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini ; \
     set -eux; \
-	mkdir -p var/cache var/log; \
+    rm -rf var/cache var/log /composer ; \
+	mkdir -p var/cache var/log /composer; \
     mkdir -p var/data/download var/data/csv; \
 	composer install --prefer-dist --no-dev --no-progress --no-scripts --no-interaction; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
 	composer symfony:dump-env prod; \
 	composer run-script --no-dev post-install-cmd; \
-	chmod +x bin/console /usr/local/bin/docker-healthcheck /usr/local/bin/docker-entrypoint.sh; \
+	chmod +x bin/console /usr/local/bin/docker-healthcheck /usr/local/bin/docker-entrypoint.sh /usr/local/bin/security-checker-install.sh; \
     cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && apk del tzdata; \
     sync

@@ -45,7 +45,7 @@ class RawSample
 
     public function getTimestampWithMs(): string
     {
-        if (null === $this->tsms) {
+        if ($this->tsms === null) {
             return '*';
         }
 

@@ -8,7 +8,7 @@ use App\Domain\Store\Adapter\RedisTimeSeries\Sample\RawSample;
 use App\Domain\Store\Adapter\RedisTimeSeries\Vo\SampleAggregationRule;
 use App\Domain\Store\Adapter\RedisTimeSeries\Vo\SampleFilter;
 use App\Domain\Store\Adapter\RedisTimeSeries\Vo\SampleMetadata;
-use App\Domain\TsSampling\SampleSeries;
+use App\Tests\Functionnal\Prototype\TsSampling\SampleSeries;
 
 /**
  * TimeSeries is a adapter on RedisTimeSeries module.

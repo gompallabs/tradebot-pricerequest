@@ -51,8 +51,7 @@ class BybitApiClient implements Client
                 'start' => $from->getTimestamp() * 1000, // time in ms
                 'end' => $to->getTimestamp() * 1000, // time in ms
                 'limit' => 1000, // max expected results - limitation
-            ]
-        );
+            ]);
         $options = $this->encryptGetRequest($url);
 
         return $this->bybitClient->request(
@@ -67,8 +66,7 @@ class BybitApiClient implements Client
         $url = $this->router->generate('recent_trade', [
                 'category' => $category,
                 'symbol' => $ticker,
-            ]
-        );
+            ]);
 
         $options = $this->encryptGetRequest($url);
 

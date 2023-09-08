@@ -42,14 +42,14 @@ final class BybitFileDownloadCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $all = 'y' === $input->getArgument('all');
-        $latest = 'y' === $input->getArgument('latest');
+        $all = $input->getArgument('all') === 'y';
+        $latest = $input->getArgument('latest') === 'y';
         $options = [
             'all' => $all,
             'latest' => $latest,
         ];
 
-        if ('y' === $input->getArgument('backup')) {
+        if ($input->getArgument('backup') === 'y') {
             $options['backup'] = dirname(__DIR__, 3).DIRECTORY_SEPARATOR.$this->backupFolder;
         }
 
