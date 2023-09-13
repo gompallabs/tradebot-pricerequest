@@ -22,10 +22,12 @@ final class RedisTimeSeriesFactory implements RedisTimeSeriesFactoryInterface
 
     public function getClient(): TimeSeriesInterface
     {
-        return new TimeSeries(new \Redis(),
+        return new TimeSeries(
+            new \Redis(),
             new ConnectionParams(
                 host: $this->host,
                 port: $this->port,
-            ));
+            )
+        );
     }
 }

@@ -52,12 +52,12 @@ final class BybitFileDownloader implements FileDownloaderInterface
 
         // check options to fetch the files to download
         $fileToDownload = [];
-        $all = array_key_exists('all', $options) && true === $options['all'];
-        $latest = array_key_exists('latest', $options) && true === $options['latest'];
+        $all = array_key_exists('all', $options) && $options['all'] === true;
+        $latest = array_key_exists('latest', $options) && $options['latest'] === true;
         $date = array_key_exists('date', $options) ? $options['date'] : null;
         $filter = array_key_exists('filter', $options);
 
-        if (true === $filter) {
+        if ($filter === true) {
             if (array_key_exists('first', $options['filter'])) {
                 $fileToDownload = array_slice($fileNames, 0, $options['filter']['first']);
             }
@@ -75,7 +75,7 @@ final class BybitFileDownloader implements FileDownloaderInterface
             $fileToDownload[] = end($fileNames);
         }
 
-        if (false === $all && null !== $date) {
+        if ($all === false && $date !== null) {
             foreach ($fileNames as $fileName) {
                 $strDate = new \DateTime($date);
                 $strDate = $strDate->format('Y-m-d');
@@ -107,7 +107,7 @@ final class BybitFileDownloader implements FileDownloaderInterface
                 $response = $this->bybitPublicClient->request('GET', $slug.DIRECTORY_SEPARATOR.$fileName);
                 $destination = $destinationDir.DIRECTORY_SEPARATOR.$fileName;
 
-                if (200 === $response->getStatusCode()) {
+                if ($response->getStatusCode() === 200) {
                     file_put_contents($destination, $response->getContent());
                     if (array_key_exists('backup', $options)) {
                         $from = $destination;

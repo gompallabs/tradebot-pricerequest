@@ -11,7 +11,7 @@ final class TimeStampConverter
     public static function dateTimeFromTimestampWithMs(int $timestamp): \DateTimeInterface
     {
         $dateTime = \DateTimeImmutable::createFromFormat('U.u', sprintf('%.03f', $timestamp / 1000));
-        if (false === $dateTime) {
+        if ($dateTime === false) {
             throw new TimestampParsingException(sprintf('Unable to parse timestamp: %d', $timestamp));
         }
 

@@ -2,13 +2,17 @@ default:
     suites:
         default:
             contexts:
-                - App\Tests\Functionnal\AggregationContext
-                - App\Tests\Functionnal\DatastoreContext
-                - App\Tests\Functionnal\FileContext
-                - App\Tests\Functionnal\RecentTradesContext
-                - App\Tests\Functionnal\RequestContext
-                - App\Tests\Functionnal\TimeSeriesContext
+                - App\Tests\Functionnal\Prototype\AggregationContext
+                - App\Tests\Functionnal\Prototype\DatastoreContext
+                - App\Tests\Functionnal\Prototype\FileContext
+                - App\Tests\Functionnal\Prototype\RecentTradesContext
+                - App\Tests\Functionnal\Prototype\RequestContext
+                - App\Tests\Functionnal\Prototype\TimeSeriesContext
+                - App\Tests\Functionnal\Refacto\RefactoContext
 
     extensions:
         FriendsOfBehat\SymfonyExtension:
             bootstrap: tests/bootstrap.php
+            kernel:
+                class: 'App\Kernel'
+                environment: 'test'

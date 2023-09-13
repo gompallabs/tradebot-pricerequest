@@ -16,7 +16,7 @@ final class BybitCsvFileParser implements FileParserInterface
 {
     public static function parse(\SplFileInfo $fileInfo): \ArrayIterator
     {
-        if ('csv' !== $fileInfo->getExtension()) {
+        if ($fileInfo->getExtension() !== 'csv') {
             throw new \LogicException('Expected .csv extension, got '.$fileInfo->getExtension().' in'.__CLASS__);
         }
 
@@ -32,7 +32,8 @@ final class BybitCsvFileParser implements FileParserInterface
 
         return new \ArrayIterator(
             iterator_to_array(
-                $statement->process($sourceCsv)->getIterator())
+                $statement->process($sourceCsv)->getIterator()
+            )
         );
     }
 }

@@ -14,7 +14,7 @@ use App\Domain\Store\Adapter\RedisTimeSeries\Vo\SampleDuplicatePolicyList;
 use App\Domain\Store\Adapter\RedisTimeSeries\Vo\SampleFilter;
 use App\Domain\Store\Adapter\RedisTimeSeries\Vo\SampleLabel;
 use App\Domain\Store\Adapter\RedisTimeSeries\Vo\SampleMetadata;
-use App\Domain\TsSampling\SampleSeries;
+use App\Tests\Functionnal\Prototype\TsSampling\SampleSeries;
 
 /**
  * Duplication policies are used when a TimeSerie already contains the same timestamp for a given key
@@ -43,16 +43,16 @@ final class TimeSeries extends Client implements TimeSeriesInterface
     ): void {
         $params = [];
 
-        if (true === $uncompressed) {
+        if ($uncompressed === true) {
             $params[] = 'UNCOMPRESSED';
         }
 
-        if (null !== $chunkSize) {
+        if ($chunkSize !== null) {
             $params[] = 'CHUNK_SIZE';
             $params[] = (string) $chunkSize;
         }
 
-        if (null !== $duplicatePolicy) {
+        if ($duplicatePolicy !== null) {
             if (!$policy = SampleDuplicatePolicyList::tryFrom($duplicatePolicy)) {
                 throw new InvalidDuplicatePolicyException(sprintf('Duplicate policy %s is invalid', $duplicatePolicy));
             }
@@ -93,16 +93,16 @@ final class TimeSeries extends Client implements TimeSeriesInterface
     ): RawSample {
         $params = [];
 
-        if (true === $uncompressed) {
+        if ($uncompressed === true) {
             $params[] = 'UNCOMPRESSED';
         }
 
-        if (null !== $chunkSize) {
+        if ($chunkSize !== null) {
             $params[] = 'CHUNK_SIZE';
             $params[] = (string) $chunkSize;
         }
 
-        if (null !== $duplicatePolicy) {
+        if ($duplicatePolicy !== null) {
             if (!$policy = SampleDuplicatePolicyList::tryFrom($duplicatePolicy)) {
                 throw new InvalidDuplicatePolicyException(sprintf('Duplicate policy %s is invalid', $duplicatePolicy));
             }
@@ -165,16 +165,16 @@ final class TimeSeries extends Client implements TimeSeriesInterface
     ): RawSampleWithLabels {
         $params = [];
 
-        if (true === $uncompressed) {
+        if ($uncompressed === true) {
             $params[] = 'UNCOMPRESSED';
         }
 
-        if (null !== $chunkSize) {
+        if ($chunkSize !== null) {
             $params[] = 'CHUNK_SIZE';
             $params[] = (string) $chunkSize;
         }
 
-        if (null !== $duplicatePolicy) {
+        if ($duplicatePolicy !== null) {
             if (!$policy = SampleDuplicatePolicyList::tryFrom($duplicatePolicy)) {
                 throw new InvalidDuplicatePolicyException(sprintf('Duplicate policy %s is invalid', $duplicatePolicy));
             }
@@ -208,7 +208,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
     public function pushSeries(SampleSeries $series, ?int $retentionMs = 10000000000): void
     {
         $info = $this->info($series->getTsName());
-        if (false !== $info) {
+        if ($info !== false) {
             $this->deleteSeries($series);
         }
 
@@ -285,7 +285,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
 
         $command = $reverse ? 'TS.REVRANGE' : 'TS.RANGE';
         $params = [$command, $key, $fromTs, $toTs];
-        if (null !== $count) {
+        if ($count !== null) {
             $params[] = 'COUNT';
             $params[] = (string) $count;
         }
@@ -371,7 +371,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
         $command = $reverse ? 'TS.MREVRANGE' : 'TS.MRANGE';
         $params = [$command, $fromTs, $toTs];
 
-        if (null !== $count) {
+        if ($count !== null) {
             $params[] = 'COUNT';
             $params[] = (string) $count;
         }
@@ -393,7 +393,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
     public function getLastRaw(string $key): RawSample|array
     {
         $result = $this->executeCommand(['TS.GET', $key]);
-        if (0 === count($result)) {
+        if (count($result) === 0) {
             return [];
         }
 
@@ -411,7 +411,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
         $raws = [];
         foreach ($results as $result) {
             // most recent versions of TS.MGET return results in a nested array
-            if (3 === count($result)) {
+            if (count($result) === 3) {
                 $raws[] = RawSample::createFromTimestamp($result[0], (float) $result[2][1], (int) $result[2][0]);
             } else {
                 $raws[] = RawSample::createFromTimestamp($result[0], (float) $result[3], (int) $result[2]);
@@ -427,7 +427,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
     public function info(string $key): SampleMetadata|bool
     {
         $result = $this->executeCommand(['TS.INFO', $key]);
-        if (false === $result) {
+        if ($result === false) {
             return false;
         }
 
@@ -439,7 +439,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
             }
         }
 
-        $sourceKey = false === $result[21] ? null : $result[21];
+        $sourceKey = $result[21] === false ? null : $result[21];
 
         $rules = [];
         foreach ($result[23] as $rule) {
@@ -456,7 +456,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
             sourceKey: $sourceKey
         );
 
-        if ('totalSamples' === $result[0]) {
+        if ($result[0] === 'totalSamples') {
             $sample->setTotalSamples($result[1]);
         }
 
@@ -475,7 +475,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
 
     private function getRetentionParams(int $retentionMs = null): array
     {
-        if (null === $retentionMs) {
+        if ($retentionMs === null) {
             return [];
         }
 
@@ -501,7 +501,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
 
     private function getAggregationParams(SampleAggregationRule $rule = null): array
     {
-        if (null === $rule) {
+        if ($rule === null) {
             return [];
         }
 
@@ -533,11 +533,11 @@ final class TimeSeries extends Client implements TimeSeriesInterface
         array $labels = []
     ): void {
         $params = [$op, $rawSample->getKey(), (string) $rawSample->getValue()];
-        if (null !== $resetMs) {
+        if ($resetMs !== null) {
             $params[] = 'RESET';
             $params[] = (string) $resetMs;
         }
-        if (null !== $rawSample->getDateTime()) {
+        if ($rawSample->getDateTime() !== null) {
             $params[] = 'TIMESTAMP';
             $params[] = $rawSample->getTimestampWithMs();
         }
@@ -552,7 +552,7 @@ final class TimeSeries extends Client implements TimeSeriesInterface
     public function unlink(string $key)
     {
         $this->redis->get($key);
-        if (false !== $this->redis->get($key)) {
+        if ($this->redis->get($key) !== false) {
             $this->redis->unlink($key);
         }
     }
