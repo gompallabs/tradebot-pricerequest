@@ -25,7 +25,12 @@ class TickToBucketTransformer implements TransformerInterface
     {
         $start = $tickData->offsetGet(0);
         $end = $tickData->offsetGet($tickData->count() - 1);
-        $tsScale = TimeFormatTools::scale(start: $start[0], end: $end[0], timeFormat: $this->timeFormat);
+        $tsScale = TimeFormatTools::scale(
+            start: $start[0],
+            end: $end[0],
+            timeFormat: $this->timeFormat,
+            stepSize: $this->timeFrame
+        );
 
         $ohclv = new \ArrayIterator();
         foreach ($tsScale as $timeStep) {

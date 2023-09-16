@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: ~
+  workflow_dispatch: ~
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: self-hosted
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+
+      -
+        name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_DEBUG: false
+          envkey_BYBIT_API_KEY: ${{ secrets.BYBIT_API_KEY }}
+          envkey_BYBIT_API_SECRET: ${{ secrets.BYBIT_API_SECRET }}
+          directory: .
+          file_name: .env.test.local
+          fail_on_empty: false
+          sort_keys: false
+
+      -
+        name: remove previous containers
+        run: docker compose down
+
+      -
+        name: clean previous containers
+        run: docker system prune -f
+
+      -
+        name: Build containers
+        run: docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+
+      -
+        name: Start containers
+        run: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --remove-orphans --wait
+
+      -
+        name: Composer validate
+        run: docker exec app /usr/bin/composer validate
+
+      -
+        name: Run security checker
+        run: docker exec app /usr/local/bin/local-php-security-checker
+
+      -
+        name: Run PHPUnit
+        run: docker exec app ./bin/phpunit
+        env:
+          REDIS_HOST: redis
+          REDIS_PORT: 6370
+
+      -
+        name: Run Behat
+        run: |
+          docker exec app sh -c "APP_ENV=test ./vendor/bin/behat -vvv --colors"
+
+      -
+        name: Run Cs-fixer
+        run: |
+          docker exec app ./vendor/bin/php-cs-fixer fix src --dry-run
+          docker exec app ./vendor/bin/php-cs-fixer fix tests --dry-run
+
+      -
+        name: Run Phpstan
+        run: docker exec app ./vendor/bin/phpstan analyze src --level=5

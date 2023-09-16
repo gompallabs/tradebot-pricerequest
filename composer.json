@@ -2,7 +2,9 @@
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
+    "name": "gompallabs/tradebot-pricerequest",
     "prefer-stable": true,
+    "description": "request prices on exchange api and push to a datastore",
     "require": {
         "php": ">=8.1",
         "ext-ctype": "*",
@@ -20,6 +22,8 @@
         "symfony/framework-bundle": "6.3.*",
         "symfony/http-client": "6.3.*",
         "symfony/messenger": "6.3.*",
+        "symfony/phpunit-bridge": "^6.3",
+        "symfony/requirements-checker": "^2.0",
         "symfony/runtime": "6.3.*",
         "symfony/string": "6.3.*",
         "symfony/translation": "6.3.*",
@@ -34,8 +38,6 @@
         "squizlabs/php_codesniffer": "^3.7",
         "symfony/browser-kit": "6.3.*",
         "symfony/css-selector": "6.3.*",
-        "symfony/monolog-bundle": "^3.8",
-        "symfony/phpunit-bridge": "^6.3",
         "symfony/property-access": "6.3.*"
     },
     "config": {
@@ -68,7 +70,8 @@
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+            "assets:install %PUBLIC_DIR%": "symfony-cmd",
+            "requirements-checker": "script"
         },
         "post-install-cmd": [
             "@auto-scripts"

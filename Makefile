@@ -9,7 +9,7 @@ CONSOLE=bin/console --env=dev
 CONSOLE_TEST=bin/console --env=test
 
 DC =docker compose -f docker-compose.yml
-EXEC = $(DC) exec php
+EXEC = $(DC) exec app
 COMPOSER = $(EXEC) composer
 
 
@@ -32,7 +32,7 @@ down:
 	@$(DC) stop
 	@$(DC) rm -v --force
 
-php:
+app:
 	@$(EXEC) sh
 
 # Tests, security checks, coverage and CI
@@ -47,6 +47,10 @@ phpcs: ## Run php code sniffer
 	$(EXEC) ./vendor/bin/php-cs-fixer fix src
 	$(EXEC) ./vendor/bin/php-cs-fixer fix tests
 
+phpcsfixer: ## Run php code sniffer
+	@$(EXEC) /srv/app/vendor/bin/php-cs-fixer fix src --dry-run
+	@$(EXEC) /srv/app/vendor/bin/php-cs-fixer fix tests --dry-run
+
 phpstan:
 	$(EXEC) ./vendor/bin/phpstan analyse src --level=5
 
@@ -54,7 +58,7 @@ behat: ## Run behat tests
 	$(EXEC) ./vendor/bin/behat -vvv --no-snippets
 
 phpunit: ## Run phpunit tests
-	$(EXEC) ./vendor/bin/phpunit
+	$(EXEC) ./vendor/bin/phpunit tests
 
 ci: ## Run all check scripts
 ci: phpcs phpstan check-security phpunit behat

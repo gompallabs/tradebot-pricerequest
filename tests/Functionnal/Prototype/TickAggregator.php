@@ -57,7 +57,7 @@ final class TickAggregator
         [$buyVolume, $sellVolume] = self::extractVolumes($simpleTicksCollection);
 
         $ohlcv = new PriceOhlcv(
-            tsms: $tsms,
+            tsms: (int) $tsms,
             open: $open,
         );
         $ohlcv->setHigh($max);

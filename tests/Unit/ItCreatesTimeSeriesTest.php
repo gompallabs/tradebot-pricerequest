@@ -13,7 +13,10 @@ class ItCreatesTimeSeriesTest extends TestCase
 {
     public function testItInstanciates()
     {
-        $connectionParams = new ConnectionParams('10.0.4.15');
+        $connectionParams = new ConnectionParams(
+            getenv('REDIS_HOST'),
+            (int) getenv('REDIS_PORT')
+        );
         $timeSeries = new TimeSeries(new \Redis(), $connectionParams);
         self::assertInstanceOf(TimeSeriesInterface::class, $timeSeries);
         $value = uniqid(random_bytes(12));
