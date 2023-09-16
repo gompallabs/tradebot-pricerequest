@@ -195,60 +195,60 @@ final class TimeSeries extends Client implements TimeSeriesInterface
         return RawSampleWithLabels::createFromTimestampAndLabels($rawSampleWithLabels->getKey(), $rawSampleWithLabels->getValue(), $timestamp, $rawSampleWithLabels->getLabels());
     }
 
-    public function deleteSeries(SampleSeries $series): void
-    {
-        /* @var SampleSeries $serie */
-        $this->delTs($series->getTsName());
-    }
-
-    /**
-     * 10000000000 ms = 115.74 days.
-     * Only to create new series with a bunch of samples.
-     */
-    public function pushSeries(SampleSeries $series, ?int $retentionMs = 10000000000): void
-    {
-        $info = $this->info($series->getTsName());
-        if ($info !== false) {
-            $this->deleteSeries($series);
-        }
-
-        $this->create(key: $series->getTsName(), retentionMs: $retentionMs, labels: [
-            new SampleLabel('asset', $series->getName()),
-            new SampleLabel('dp', $series->getDatapoint()),
-        ], duplicatePolicy: SampleDuplicatePolicyList::BLOCK->value);
-
-        foreach ($series->getIterator() as $sample) {
-            $this->addSampleWithLabels($sample);
-        }
-
-        // duplicate policy default = BLOCK. This causes pb when dp already exists
-        // should try a "addManyWithLabels" method // bulk insert
-
-        //        if (empty($raws)) {
-        //            return [];
-        //        }
-        //        $params = ['TS.MADD'];
-        //        foreach ($raws as $rawSample) {
-        //            $rawParams = $rawSample->toRedisParams();
-        //            foreach ($rawParams as $rawParam) {
-        //                $params[] = $rawParam;
-        //            }
-        //        }
-        //
-        //        /** @var array<int> $timestamps */
-        //        $timestamps = $this->executeCommand($params);
-        //        $count = count($timestamps);
-        //        $results = [];
-        //        for ($i = 0; $i < $count; ++$i) {
-        //            $results[] = RawSample::createFromTimestamp(
-        //                $raws[$i]->getKey(),
-        //                $raws[$i]->getValue(),
-        //                $timestamps[$i]
-        //            );
-        //        }
-        //
-        //        return $results;
-    }
+    //    public function deleteSeries(SampleSeries $series): void
+    //    {
+    //        /* @var SampleSeries $serie */
+    //        $this->delTs($series->getTsName());
+    //    }
+    //
+    //    /**
+    //     * 10000000000 ms = 115.74 days.
+    //     * Only to create new series with a bunch of samples.
+    //     */
+    //    public function pushSeries(SampleSeries $series, ?int $retentionMs = 10000000000): void
+    //    {
+    //        $info = $this->info($series->getTsName());
+    //        if ($info !== false) {
+    //            $this->deleteSeries($series);
+    //        }
+    //
+    //        $this->create(key: $series->getTsName(), retentionMs: $retentionMs, labels: [
+    //            new SampleLabel('asset', $series->getName()),
+    //            new SampleLabel('dp', $series->getDatapoint()),
+    //        ], duplicatePolicy: SampleDuplicatePolicyList::BLOCK->value);
+    //
+    //        foreach ($series->getIterator() as $sample) {
+    //            $this->addSampleWithLabels($sample);
+    //        }
+    //
+    //        // duplicate policy default = BLOCK. This causes pb when dp already exists
+    //        // should try a "addManyWithLabels" method // bulk insert
+    //
+    //        //        if (empty($raws)) {
+    //        //            return [];
+    //        //        }
+    //        //        $params = ['TS.MADD'];
+    //        //        foreach ($raws as $rawSample) {
+    //        //            $rawParams = $rawSample->toRedisParams();
+    //        //            foreach ($rawParams as $rawParam) {
+    //        //                $params[] = $rawParam;
+    //        //            }
+    //        //        }
+    //        //
+    //        //        /** @var array<int> $timestamps */
+    //        //        $timestamps = $this->executeCommand($params);
+    //        //        $count = count($timestamps);
+    //        //        $results = [];
+    //        //        for ($i = 0; $i < $count; ++$i) {
+    //        //            $results[] = RawSample::createFromTimestamp(
+    //        //                $raws[$i]->getKey(),
+    //        //                $raws[$i]->getValue(),
+    //        //                $timestamps[$i]
+    //        //            );
+    //        //        }
+    //        //
+    //        //        return $results;
+    //    }
 
     /**
      * Creates an aggregation rule for a key (e.g. min, max, last, avg, stdp, etc.).

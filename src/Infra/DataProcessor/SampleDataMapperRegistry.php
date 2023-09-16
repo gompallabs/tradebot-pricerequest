@@ -25,7 +25,7 @@ class SampleDataMapperRegistry implements SampleDataMapperRegistryInterface
         }
     }
 
-    public function mapToTs(Source $source, array $sample): array
+    public function mapToTs(Source $source, array $sample): \SplFixedArray
     {
         $dataMapper = $this->getMapperForSource($source);
 

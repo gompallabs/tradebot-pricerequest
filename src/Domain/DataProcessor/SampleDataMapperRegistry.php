@@ -8,7 +8,7 @@ use App\Domain\Source\Source;
 
 interface SampleDataMapperRegistry
 {
-    public function mapToTs(Source $source, array $sample): array;
+    public function mapToTs(Source $source, array $sample): \SplFixedArray;
 
     public function supports(Source $source): bool;
 

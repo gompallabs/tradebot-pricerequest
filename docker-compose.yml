@@ -1,8 +1,8 @@
-version: '3.8'
+version: "3.4"
 services:
 
-  php:
-    container_name: php
+  app:
+    container_name: app
     restart: unless-stopped
     build:
       context: .
@@ -17,18 +17,8 @@ services:
         - INSTALL_DIR=app
         - PHP_VERSION=8.2
         - TZ=Europe/Paris
-    environment:
-      - APP_ENV=dev
-    healthcheck:
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 30s
-      test: ./usr/local/bin/docker-healthcheck
-    volumes:
-      - ".:/srv/app:rw"
-      - "./var/log:/srv/app/var/log:rw"
-      - "./.docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro"
+
+
 
   redis:
     image: redislabs/redistimeseries

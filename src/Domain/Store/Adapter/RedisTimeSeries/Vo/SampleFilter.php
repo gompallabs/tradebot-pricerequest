@@ -28,7 +28,7 @@ final class SampleFilter
     ];
 
     /**
-     * @var array<array{string, int, string|array|null}
+     * @var array<array{string, int, string|array|null}>
      */
     private array $filters = [];
 
