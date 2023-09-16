@@ -41,39 +41,47 @@ jobs:
         run: docker system prune -f
 
       -
+        name: remove previous images
+        run: docker image prune -f
+
+      -
         name: Build containers
-        run: docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+        run: docker compose -f docker-compose.yml build
+
+      - name: Create docker network
+        run: |
+          docker network create tradebot || true
 
       -
         name: Start containers
-        run: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --remove-orphans --wait
+        run: docker compose -f docker-compose.yml up -d --remove-orphans --wait
 
       -
         name: Composer validate
-        run: docker exec app /usr/bin/composer validate
+        run: docker exec app_price_request /usr/bin/composer validate
 
       -
         name: Run security checker
-        run: docker exec app /usr/local/bin/local-php-security-checker
+        run: docker exec app_price_request /usr/local/bin/local-php-security-checker
 
       -
         name: Run PHPUnit
-        run: docker exec app ./bin/phpunit
+        run: docker exec app_price_request ./bin/phpunit tests
         env:
           REDIS_HOST: redis
-          REDIS_PORT: 6370
+          REDIS_PORT: 6379
 
       -
         name: Run Behat
         run: |
-          docker exec app sh -c "APP_ENV=test ./vendor/bin/behat -vvv --colors"
+          docker exec app_price_request sh -c "APP_ENV=test ./vendor/bin/behat -vvv --colors"
 
       -
         name: Run Cs-fixer
         run: |
-          docker exec app ./vendor/bin/php-cs-fixer fix src --dry-run
-          docker exec app ./vendor/bin/php-cs-fixer fix tests --dry-run
+          docker exec app_price_request ./vendor/bin/php-cs-fixer fix src --dry-run
+          docker exec app_price_request ./vendor/bin/php-cs-fixer fix tests --dry-run
 
       -
         name: Run Phpstan
-        run: docker exec app ./vendor/bin/phpstan analyze src --level=5
+        run: docker exec app_price_request ./vendor/bin/phpstan analyze src --level=5

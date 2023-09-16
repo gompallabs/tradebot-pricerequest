@@ -1,8 +1,8 @@
 version: "3.4"
 services:
 
-  app:
-    container_name: app
+  app_price_request:
+    container_name: app_price_request
     restart: unless-stopped
     build:
       context: .
@@ -17,10 +17,29 @@ services:
         - INSTALL_DIR=app
         - PHP_VERSION=8.2
         - TZ=Europe/Paris
+    networks:
+      - tradebot
 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - tradebot
 
 
   redis:
     image: redislabs/redistimeseries
     ports:
       - "6379"
+    networks:
+      - tradebot
+
+networks:
+  tradebot:
+    external: true

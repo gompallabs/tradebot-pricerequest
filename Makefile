@@ -8,8 +8,8 @@
 CONSOLE=bin/console --env=dev
 CONSOLE_TEST=bin/console --env=test
 
-DC =docker compose -f docker-compose.yml
-EXEC = $(DC) exec app
+DC =docker compose -f docker-compose.yml -f docker-compose.dev.yml
+EXEC = $(DC) exec app_price_request
 COMPOSER = $(EXEC) composer
 
 
