@@ -6,7 +6,6 @@
 parameters:
     downloadDir: 'var/data/download'
     backupFolder: 'var/data/download/backup'
-    redisHost: '%env(string:REDIS_HOST)%'
     bybitApiKeys:
         ApiKey: '%env(string:BYBIT_API_KEY)%'
         Secret: '%env(string:BYBIT_API_SECRET)%'
@@ -28,49 +27,20 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-
     App\Infra\Source\Api\BybitApiClientBuilder:
         arguments:
             - '%bybitApiKeys%'
 
-
-    # Redis and TimeSeries adapters
-    timeseries_factory:
-        class: 'App\Infra\Store\Adapter\RedisTimeSeries\Factory\RedisTimeSeriesFactory'
-        arguments:
-            - '%redisHost%'
-            - '6379'
-
-    App\Infra\Store\Adapter\RedisTimeSeries\TimeSeries:
-        class: App\Infra\Store\Adapter\RedisTimeSeries\TimeSeries
-        factory: ['@timeseries_factory', 'getClient']
-
     App\Infra\Source\File\BybitFileDownloader:
         arguments:
-            - '%downloadDir%'
-
-
-    # CLI
-    App\UI\Cli\BybitFileDownloadCommand:
-        arguments:
-            - '@App\Infra\Source\File\BybitFileDownloader'
             - '%backupFolder%'
             - '%downloadDir%'
 
-    App\UI\Cli\BybitFileImportCommand:
+    # CLI
+    App\UI\Cli\FileRequestCommand:
         arguments:
+            - '@query.bus'
+            - '@query.bus'
+            - '@event.bus'
+            - '%backupFolder%'
             - '%downloadDir%'
-
-
-    # this config only applies to the services created by this file
-    _instanceof:
-        App\Domain\DataProcessor\SampleChecker:
-            tags: ['app.sample_checker']
-        App\Domain\DataProcessor\SampleDataMapper:
-            tags: ['app.sample_data_mapper']
-
-    App\Infra\DataProcessor\SampleCheckerRegistry:
-        - arguments: [!tagged_iterator { tag: 'app.sample_checker'}]
-
-    App\Infra\DataProcessor\SampleDataMapperRegistry:
-        - arguments: [!tagged_iterator { tag: 'app.sample_data_mapper'}]
