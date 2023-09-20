@@ -1,5 +1,7 @@
 # Tradebot price-request svc 
-Request data from a specific source and push timeseries to datastore <br />
+Request data from a specific source and push formated TickData to datastore <br />
+Then dispatch a msg for async processing to OHLCV or linear representation <br />
+This service is *not aware of timeseries* <br />
 
 Pre-requisites: <br />
     - PHP CLI >= v8.1 <br />

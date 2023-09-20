@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Source;
 
-enum Exchange
+enum Exchange: string
 {
-    case Bybit;
-    case Bitget;
+    case Bybit = 'Bybit';
+    case Bitget = 'Bitget';
 }

@@ -7,6 +7,7 @@
     "description": "request prices on exchange api and push to a datastore",
     "require": {
         "php": ">=8.1",
+        "ext-amqp": "*",
         "ext-ctype": "*",
         "ext-http": "*",
         "ext-iconv": "*",
@@ -14,6 +15,7 @@
         "beberlei/assert": "^3.3",
         "doctrine/collections": "^2.1",
         "league/csv": "^9.10",
+        "symfony/amqp-messenger": "6.3.*",
         "symfony/console": "6.3.*",
         "symfony/dom-crawler": "6.3.*",
         "symfony/dotenv": "6.3.*",
@@ -30,8 +32,8 @@
         "symfony/yaml": "6.3.*"
     },
     "require-dev": {
-        "behat/behat": "^3.13",
         "friends-of-behat/symfony-extension": "^2.4",
+        "behat/behat": "^3.13",
         "friendsofphp/php-cs-fixer": "^3.25",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^9.5",

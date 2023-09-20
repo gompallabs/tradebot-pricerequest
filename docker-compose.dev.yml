@@ -2,7 +2,7 @@ version: "3.4"
 
 # Development environment override
 services:
-  app:
+  app_price_request:
     build:
       context: .
       target: app_php
@@ -13,6 +13,14 @@ services:
       # Ensure that host.docker.internal is correctly defined on Linux
       - host.docker.internal:host-gateway
     volumes:
-      - ".:/srv/app"
+      - ".:/srv/app:rw"
       - "./var/log:/srv/app/var/log:rw"
+      - "./var/data:/srv/app/var/data:rw"
       - "./.docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro"
+    networks:
+      - tradebot
+
+
+networks:
+   tradebot:
+     external: true

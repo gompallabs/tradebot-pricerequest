@@ -24,4 +24,14 @@ class Source
     {
         return $this->sourceType;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'exchange' => [
+                'name' => $this->getExchange()->name,
+            ],
+            'sourceType' => $this->getSourceType()->name,
+        ];
+    }
 }

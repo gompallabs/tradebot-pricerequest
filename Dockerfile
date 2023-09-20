@@ -8,14 +8,14 @@ ARG INSTALL_DIR
 
 WORKDIR /srv/app
 
-COPY composer.json composer.lock symfony.lock .env ./
+COPY behat.yml.dist composer.json composer.lock symfony.lock .env ./
 COPY bin ./bin
 COPY config ./config
+COPY features ./features
 COPY public ./public
 COPY src ./src
 COPY tests ./tests
 COPY translations ./translations
-COPY features ./features
 
 FROM php:${PHP_VERSION}-fpm-alpine AS app_php
 ARG GID=1000
@@ -25,14 +25,15 @@ ENV TZ=${TZ}
 ENV GID="${GID}"
 ENV UID="${UID}"
 
-RUN mkdir -p /var/run/php \
-&& apk add --no-cache --update linux-headers \
+RUN apk add --no-cache --update linux-headers \
     acl \
     fcgi \
     file \
     gettext \
     icu-dev \
     git \
+    rabbitmq-c \
+    rabbitmq-c-dev \
     gnu-libiconv \
     libzip-dev \
     libsodium-dev \
@@ -51,9 +52,10 @@ RUN set -o -eux; \
 		zlib-dev \
 	; \
 	\
-	install-php-extensions http intl zip opcache redis \
+	install-php-extensions http intl zip opcache redis amqp \
     ; \
 	docker-php-ext-enable \
+        amqp \
 		opcache \
         intl \
         redis \
@@ -85,20 +87,18 @@ HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD ["docker-healthcheck"]
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN ln -s "$PHP_INI_DIR"/php.ini-production "$PHP_INI_DIR"/php.ini ; \
-    set -eux; \
     rm -rf var/cache var/log /composer ; \
-	mkdir -p var/cache var/log /composer; \
-    mkdir -p var/data/download var/data/csv; \
+    mkdir -p var/cache var/log /composer; \
+    mkdir -p var/data/download/backup var/data/csv; \
+    set -eux; \
 	composer install --prefer-dist --no-progress --no-scripts --no-interaction; \
 	composer dump-autoload --classmap-authoritative; \
 	composer symfony:dump-env dev; \
-	composer run-script --no-dev post-install-cmd; \
+	composer run-script post-install-cmd; \
 	chmod +x bin/console /usr/local/bin/docker-healthcheck /usr/local/bin/docker-entrypoint.sh /usr/local/bin/security-checker-install.sh; \
     cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && apk del tzdata; \
     sync
-
-VOLUME /srv/app/var
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
