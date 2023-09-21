@@ -40,7 +40,5 @@ services:
     App\UI\Cli\FileRequestCommand:
         arguments:
             - '@query.bus'
-            - '@query.bus'
-            - '@event.bus'
             - '%backupFolder%'
-            - '%downloadDir%'
+
