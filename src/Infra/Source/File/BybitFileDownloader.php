@@ -7,6 +7,8 @@ namespace App\Infra\Source\File;
 use App\Domain\Source\File\FileDownloaderInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 use Symfony\Component\String\UnicodeString;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -15,11 +17,16 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class BybitFileDownloader implements FileDownloaderInterface
 {
-    private HttpClientInterface $bybitPublicClient;
+    private string $backupFolder;
     private string $destinationDir;
+    private HttpClientInterface $bybitPublicClient;
 
-    public function __construct(string $destinationDir, HttpClientInterface $bybitPublicClient)
-    {
+    public function __construct(
+        string $backupFolder,
+        string $destinationDir,
+        HttpClientInterface $bybitPublicClient
+    ) {
+        $this->backupFolder = $backupFolder;
         $this->bybitPublicClient = $bybitPublicClient;
         $this->destinationDir = $destinationDir;
     }
@@ -32,9 +39,8 @@ final class BybitFileDownloader implements FileDownloaderInterface
      *  'filter' => [
      *     'first' => n,
      *     'last' => p
-     * ].
-     *
-     * @return array<\SplFileInfo>
+     *  ],
+     *  'backup' => true / false.
      */
     public function downloadFromHtmlPage(
         string $slug,
@@ -105,14 +111,21 @@ final class BybitFileDownloader implements FileDownloaderInterface
         foreach ($fileToDownload as $fileName) {
             if (!in_array($fileName, $existingFiles)) {
                 $response = $this->bybitPublicClient->request('GET', $slug.DIRECTORY_SEPARATOR.$fileName);
-                $destination = $destinationDir.DIRECTORY_SEPARATOR.$fileName;
+                $downloadDestination = $destinationDir.DIRECTORY_SEPARATOR.$fileName;
 
                 if ($response->getStatusCode() === 200) {
-                    file_put_contents($destination, $response->getContent());
-                    if (array_key_exists('backup', $options)) {
-                        $from = $destination;
-                        $to = $options['backup'].DIRECTORY_SEPARATOR.$fileName;
-                        copy(from: $from, to: $to);
+                    $bin = $response->getContent();
+                    file_put_contents($downloadDestination, $bin);
+                    if (array_key_exists('backup', $options) && $options['backup'] === true) {
+                        $backupDir = dirname(__DIR__, 4).DIRECTORY_SEPARATOR.$this->backupFolder;
+                        $backupDestination = $backupDir.DIRECTORY_SEPARATOR.$fileName;
+
+                        // we copy file with Process hackbox because backupDir may be a symlink, not supported in PHP
+                        $process = Process::fromShellCommandline(sprintf('cp %s %s', $downloadDestination, $backupDestination));
+                        $process->run();
+                        if (!$process->isSuccessful()) {
+                            throw new ProcessFailedException($process);
+                        }
                     }
 
                     $finder = new Finder();

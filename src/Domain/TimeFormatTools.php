@@ -29,17 +29,16 @@ class TimeFormatTools
     {
         $start = match ($timeFormat->value) {
             'DotMilliseconds' => (int) floor($start),
-            'default' => throw new \LogicException('missing case in match '.__CLASS__)
+            'IntMilliseconds' => (int) floor($start / 1000),
+            'Seconds' => $start,
         };
 
         $end = match ($timeFormat->value) {
             'DotMilliseconds' => (int) ceil($end),
-            'default' => throw new \LogicException('missing case in match '.__CLASS__)
+            'IntMilliseconds' => (int) ceil($end / 1000),
+            'Seconds' => $end,
         };
 
-        return match ($timeFormat->value) {
-            'DotMilliseconds' => new \ArrayIterator(range($start, $end, $stepSize)),
-            'default' => throw new \LogicException('Missing case in '.__CLASS__)
-        };
+        return new \ArrayIterator(range($start, $end, $stepSize));
     }
 }

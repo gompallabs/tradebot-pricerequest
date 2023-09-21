@@ -24,4 +24,20 @@ final class Coin
     {
         return $this->category;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'ticker' => $this->getTicker(),
+            'category' => $this->getCategory(),
+        ];
+    }
+
+    public function fromArray(array $data): self
+    {
+        return new self(
+            ticker: $data['ticker'],
+            category: $data['category']
+        );
+    }
 }

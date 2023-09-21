@@ -14,11 +14,5 @@ services:
     App\Tests\Functionnal\:
         resource: '../tests/Functionnal/*'
 
-    # this config only applies to the services created by this file
-    _instanceof:
-        App\Domain\DataProcessor\SampleChecker:
-            tags: ['app.sample_checker']
-
-    App\Infra\DataProcessor\SampleCheckerRegistry:
-        - arguments:
-            !tagged_iterator app.sample_checker
+    Symfony\Component\Messenger\Transport\TransportInterface:
+        public: true

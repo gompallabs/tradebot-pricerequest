@@ -21,3 +21,7 @@ recent_trade:
   requirements:
     category: \s+     # Product type. linear,inverse
     symbol: \s+       # Symbol name
+
+file_download:
+  path: /trading/{symbol}
+  methods: [GET]
